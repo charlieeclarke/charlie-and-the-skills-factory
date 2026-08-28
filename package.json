@@ -8,7 +8,8 @@
   },
   "files": [
     "bin",
-    "plugins/skills-factory/skills"
+    "plugins/skills-factory/skills",
+    "NOTICE"
   ],
   "scripts": {
     "start": "node bin/install.js"
