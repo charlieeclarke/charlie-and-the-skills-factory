@@ -12,7 +12,7 @@ Synthesise, do not interview. If you reach a decision that has not actually been
 ## Principles
 
 - **One issue, one piece of work.** A spec longer than the change it describes is a failure.
-- **Write only what was agreed.** `/tickets` breaks it down, `/spike` answers open questions. Neither is this skill's job.
+- **Write only what was agreed.** `/tickets` breaks it down, `/prototype` answers open questions. Neither is this skill's job.
 - **Omit anything with nothing to say.** No user stories, no test strategy unless asked for.
 - **Never overwrite what is already on the issue.** Append below it and leave existing links and context intact.
 - **Use the repo's own vocabulary and conventions** where it documents them.

@@ -1,9 +1,9 @@
 ---
-name: spike
-description: Build throwaway code to answer one design question - usually what something should look like, sometimes whether a state model holds up. Use when the user wants to try a few directions before committing, sanity-check an approach, or asks to prototype or spike something.
+name: prototype
+description: Build throwaway code to answer one design question - usually what something should look like, sometimes whether a state model holds up. Use when the user wants to try a few directions before committing, sanity-check an approach, or asks to prototype or try a few directions.
 ---
 
-# Spike
+# Prototype
 
 Throwaway code that answers **one question**. The question decides the shape.
 
@@ -14,7 +14,7 @@ Name the question before writing anything. If it can't be answered in one sittin
 - **"What should this look like?"** → build several genuinely different variations, not three shades of the same idea. This is the common case.
 - **"Does this model hold up?"** → drive the states by hand and print the full state after every action, so the awkward cases are visible rather than imagined.
 
-If the question is ambiguous and the user isn't around, pick the one the surrounding code suggests and say which assumption you made at the top of the spike.
+If the question is ambiguous and the user isn't around, pick the one the surrounding code suggests and say which assumption you made at the top of the prototype.
 
 ## Rules
 
@@ -26,7 +26,7 @@ If the question is ambiguous and the user isn't around, pick the one the surroun
 
 ## When it's answered
 
-Never merge a spike to main.
+Never merge a prototype to main.
 
 - Leave it on its own branch.
 - Write the verdict on the issue: the question, the answer, and why.
