@@ -10,8 +10,15 @@ const CELLS = 24;
 const WALK = 44;
 const FRAME_H = 10;
 
-const DEST = process.env.CLAUDE_SKILLS_DIR || path.join(os.homedir(), '.claude', 'skills');
+const args = process.argv.slice(2);
+const projectMode = args.includes('--project') || args.includes('-p');
+const VERSION = require('../package.json').version;
+
+const DEST = process.env.CLAUDE_SKILLS_DIR || (projectMode
+  ? path.join(process.cwd(), '.claude', 'skills')
+  : path.join(os.homedir(), '.claude', 'skills'));
 const SRC = path.join(__dirname, '..', 'plugins', 'skills-factory', 'skills');
+const MARKER = () => path.join(DEST, '.factory-version');
 
 const live = Boolean(process.stdout.isTTY) && !process.env.NO_COLOR;
 const e = live
@@ -105,6 +112,16 @@ function copyDir(from, to) {
   }
 }
 
+function readMarker() {
+  try { return JSON.parse(fs.readFileSync(MARKER(), 'utf8')); } catch (err) { return null; }
+}
+
+function writeMarker(skills) {
+  fs.writeFileSync(MARKER(), JSON.stringify({
+    version: VERSION, installed: new Date().toISOString(), skills
+  }, null, 2) + '\n');
+}
+
 function die(msg) {
   say('  ' + e.RED + 'x ' + msg + e.Z);
   process.exit(1);
@@ -117,12 +134,14 @@ async function main() {
 
   if (!fs.existsSync(SRC)) die('the crate arrived empty - no skills/ inside the package.');
 
+  const destExisted = fs.existsSync(DEST);
   fs.mkdirSync(DEST, { recursive: true });
 
   const d = new Date();
   const p2 = (n) => String(n).padStart(2, '0');
   const stamp = String(d.getFullYear()) + p2(d.getMonth() + 1) + p2(d.getDate()) +
     '-' + p2(d.getHours()) + p2(d.getMinutes()) + p2(d.getSeconds());
+  const previous = readMarker();
   const installed = [];
   const skipped = [];
   let backedUp = false;
@@ -141,7 +160,11 @@ async function main() {
     if (fs.existsSync(dst)) {
       const backup = path.join(DEST, '.factory-backup');
       fs.mkdirSync(backup, { recursive: true });
-      fs.renameSync(dst, path.join(backup, s + '-' + stamp));
+      let target = path.join(backup, s + '-' + stamp);
+      for (let n = 2; fs.existsSync(target); n++) {
+        target = path.join(backup, s + '-' + stamp + '-' + n);
+      }
+      fs.renameSync(dst, target);
       backedUp = true;
     }
     copyDir(path.join(SRC, s), dst);
@@ -174,8 +197,22 @@ async function main() {
   });
   say('');
   skipped.forEach((s) => say('  ' + e.RED + 'x missing from the package: ' + s + e.Z));
-  say('  ' + e.D + 'Restart Claude Code to use them.' + e.Z);
+  writeMarker(installed);
+
+  if (previous && previous.version !== VERSION) {
+    say('  ' + e.D + 'updated:' + e.Z + ' ' + previous.version + ' ' + RA + ' ' + e.B + VERSION + e.Z);
+  } else {
+    say('  ' + e.D + 'version:' + e.Z + ' ' + VERSION);
+  }
+  if (destExisted) {
+    say('  ' + e.D + 'Claude Code picks these up automatically - no restart needed.' + e.Z);
+  } else {
+    say('  ' + e.D + 'Restart Claude Code so it starts watching this new folder.' + e.Z);
+  }
   say('  ' + e.D + 'installed to:' + e.Z + ' ' + DEST);
+  if (projectMode) {
+    say('  ' + e.D + 'commit .claude/skills/ so everyone gets these on clone.' + e.Z);
+  }
   if (backedUp) {
     say('  ' + e.D + 'previous versions kept in:' + e.Z + ' ' + path.join(DEST, '.factory-backup'));
   }

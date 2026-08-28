@@ -6,7 +6,12 @@ set -e
 
 REPO="charlieeclarke/charlie-and-the-skills-factory"
 BRANCH="${SKILLS_FACTORY_REF:-main}"
-DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
+PROJECT=
+for _a in "$@"; do
+  case "$_a" in --project|-p) PROJECT=1 ;; esac
+done
+if [ -n "$PROJECT" ]; then _default="$PWD/.claude/skills"; else _default="$HOME/.claude/skills"; fi
+DEST="${CLAUDE_SKILLS_DIR:-$_default}"
 SKILLS="grill-me componentise spec tickets spike deep-review handover"
 
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
@@ -173,6 +178,12 @@ fi
 SRC=$(find "$TMP" -type d -name skills -path '*skills-factory*' 2>/dev/null | head -1)
 [ -n "$SRC" ] && [ -d "$SRC" ] || { say "  ${RED}x the crate arrived empty - no skills/ inside.${Z}"; exit 1; }
 
+VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$TMP"/*/package.json 2>/dev/null | head -1)
+[ -n "$VERSION" ] || VERSION="unknown"
+PREV=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$DEST/.factory-version" 2>/dev/null | head -1)
+
+DEST_EXISTED=
+[ -d "$DEST" ] && DEST_EXISTED=1
 mkdir -p "$DEST"
 STAMP=$(date +%Y%m%d-%H%M%S)
 INSTALLED=; SKIPPED=
@@ -191,7 +202,9 @@ for s in $SKILLS; do
   if [ ! -f "$SRC/$s/SKILL.md" ]; then SKIPPED="$SKIPPED $s"; continue; fi
   if [ -d "$DEST/$s" ]; then
     mkdir -p "$DEST/.factory-backup"
-    mv "$DEST/$s" "$DEST/.factory-backup/$s-$STAMP"
+    _bk="$DEST/.factory-backup/$s-$STAMP"; _n=2
+    while [ -e "$_bk" ]; do _bk="$DEST/.factory-backup/$s-$STAMP-$_n"; _n=$((_n + 1)); done
+    mv "$DEST/$s" "$_bk"
   fi
   cp -R "$SRC/$s" "$DEST/$s"
   INSTALLED="$INSTALLED $s"
@@ -218,7 +231,21 @@ for s in $INSTALLED; do
 done
 say ""
 for s in $SKIPPED; do say "  ${RED}x missing from the crate: $s${Z}"; done
-say "  ${D}Restart Claude Code to use them.${Z}"
+printf '{\n  "version": "%s",\n  "installed": "%s",\n  "skills": [%s]\n}\n' \
+  "$VERSION" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  "$(echo $INSTALLED | sed 's/ /", "/g; s/^/"/; s/$/"/')" > "$DEST/.factory-version"
+
+if [ -n "$DEST_EXISTED" ]; then
+  say "  ${D}Claude Code picks these up automatically - no restart needed.${Z}"
+else
+  say "  ${D}Restart Claude Code so it starts watching this new folder.${Z}"
+fi
+if [ -n "$PREV" ] && [ "$PREV" != "$VERSION" ]; then
+  say "  ${D}updated:${Z} $PREV ${RED}►${Z} ${B}${VERSION}${Z}"
+else
+  say "  ${D}version:${Z} $VERSION"
+fi
 say "  ${D}installed to:${Z} $DEST"
+[ -n "$PROJECT" ] && say "  ${D}commit .claude/skills/ so everyone gets these on clone.${Z}"
 [ -d "$DEST/.factory-backup" ] && say "  ${D}previous versions kept in:${Z} $DEST/.factory-backup"
 say ""
