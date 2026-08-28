@@ -157,8 +157,6 @@ frame() { draw_sprite "$1"; ground; gauge "$1" "$2"; }
 say ""
 print_banner
 say ""
-say "  ${D}1-UP your Claude Code${Z}"
-say ""
 
 command -v curl >/dev/null 2>&1 || { say "  ${RED}x curl not found - no power-ups can be delivered.${Z}"; exit 1; }
 command -v tar  >/dev/null 2>&1 || { say "  ${RED}x tar not found - nothing here can be unwrapped.${Z}"; exit 1; }

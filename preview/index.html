@@ -92,7 +92,7 @@
 <div class="wrap">
   <header>
     <h1 class="brand"><span class="a">CHARLIE &amp; THE</span><br><span class="b">SKILLS FACTORY</span></h1>
-    <p class="tag">1-UP your Claude Code &middot; installer preview</p>
+    <p class="tag">Installer preview</p>
   </header>
 
   <div>
@@ -111,13 +111,19 @@
 
   <div class="paths">
     <div class="card">
-      <h2>One-liner</h2>
-      <p>Drops both skills into <b>~/.claude/skills/</b>, so they keep their bare names &mdash; <b>/grill-me</b> and <b>/componentise</b>.</p>
+      <h2>npm / yarn</h2>
+      <p>Skills are bundled in the package &mdash; nothing is fetched mid-install. Needs Node 14+.</p>
+      <code>npx charlie-and-the-skills-factory</code>
+      <code>yarn dlx charlie-and-the-skills-factory</code>
+    </div>
+    <div class="card">
+      <h2>Shell one-liner</h2>
+      <p>No Node required. Keeps the bare names &mdash; <b>/grill-me</b> and <b>/componentise</b>.</p>
       <code>curl -fsSL https://raw.githubusercontent.com/charlieeclarke/charlie-and-the-skills-factory/main/install.sh | sh</code>
     </div>
     <div class="card">
-      <h2>Plugin marketplace</h2>
-      <p>Managed and updatable through <b>/plugin</b>. Skills are namespaced &mdash; <b>/skills-factory:grill-me</b>.</p>
+      <h2>Claude Code plugin</h2>
+      <p>Managed through <b>/plugin</b>. Skills are namespaced &mdash; <b>/skills-factory:grill-me</b>.</p>
       <code>/plugin marketplace add charlieeclarke/charlie-and-the-skills-factory
 /plugin install skills-factory@charlie-and-the-skills-factory</code>
     </div>
@@ -201,8 +207,6 @@
   }
 
   var tail = [
-    {h:''},
-    {h:'  ' + w('d','1-UP your Claude Code')},
     {h:''},
     {h:'  ' + w('d','fetching power-ups from charlieeclarke/charlie-and-the-skills-factory@main...'), pause:520},
     {h:''},

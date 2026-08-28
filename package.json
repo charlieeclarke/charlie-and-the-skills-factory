@@ -1,0 +1,36 @@
+{
+  "name": "charlie-and-the-skills-factory",
+  "version": "1.0.0",
+  "description": "Installs the grill-me and componentise Claude Code skills into ~/.claude/skills.",
+  "bin": {
+    "charlie-and-the-skills-factory": "bin/install.js",
+    "skills-factory": "bin/install.js"
+  },
+  "files": [
+    "bin",
+    "plugins/skills-factory/skills"
+  ],
+  "scripts": {
+    "start": "node bin/install.js"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "skills",
+    "cli",
+    "refactoring"
+  ],
+  "author": "Charlie Clarke",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charlieeclarke/charlie-and-the-skills-factory.git"
+  },
+  "homepage": "https://github.com/charlieeclarke/charlie-and-the-skills-factory#readme",
+  "bugs": {
+    "url": "https://github.com/charlieeclarke/charlie-and-the-skills-factory/issues"
+  }
+}
