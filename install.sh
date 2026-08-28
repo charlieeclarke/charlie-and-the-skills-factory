@@ -109,6 +109,7 @@ print_banner() {
     else                        _c=$RED
     fi
     printf '  %s%s%s\n' "$_c" "$_l" "$Z"
+    nap 0.012
   done
 }
 

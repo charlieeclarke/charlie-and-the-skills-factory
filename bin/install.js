@@ -110,10 +110,13 @@ const sp = (n) => rep(' ', n);
 const up = (n) => { if (live) process.stdout.write('\x1b[' + n + 'A'); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, live ? ms : 0));
 
-function banner() {
-  BANNER_WORDS.forEach((word, i) => {
-    word.forEach((line) => say('  ' + BANNER_COLOUR[i] + line + e.Z));
-  });
+async function banner() {
+  for (let i = 0; i < BANNER_WORDS.length; i++) {
+    for (const line of BANNER_WORDS[i]) {
+      say('  ' + BANNER_COLOUR[i] + line + e.Z);
+      await sleep(12);
+    }
+  }
 }
 
 // The mushroom walks right and grows as the gauge fills. Mirrors install.sh.
@@ -199,7 +202,7 @@ function die(msg) {
 
 async function main() {
   say('');
-  banner();
+  await banner();
   say('');
 
   if (!fs.existsSync(SRC)) die('the crate arrived empty - no skills/ inside the package.');
