@@ -118,12 +118,12 @@
     </div>
     <div class="card">
       <h2>Shell one-liner</h2>
-      <p>No Node required. Keeps the bare names &mdash; <b>/grill-me</b> and <b>/componentise</b>.</p>
+      <p>No Node required. All seven keep their bare names &mdash; <b>/spec</b>, <b>/tickets</b>, <b>/spike</b> and the rest.</p>
       <code>curl -fsSL https://raw.githubusercontent.com/charlieeclarke/charlie-and-the-skills-factory/main/install.sh | sh</code>
     </div>
     <div class="card">
       <h2>Claude Code plugin</h2>
-      <p>Managed through <b>/plugin</b>. Skills are namespaced &mdash; <b>/skills-factory:grill-me</b>.</p>
+      <p>Managed through <b>/plugin</b>. All seven, namespaced &mdash; <b>/skills-factory:spec</b>.</p>
       <code>/plugin marketplace add charlieeclarke/charlie-and-the-skills-factory
 /plugin install skills-factory@charlie-and-the-skills-factory</code>
     </div>
@@ -206,23 +206,31 @@
     return sprite(cell).concat(['  ' + w('d', R(GR,60)), gaugeRow(cell, label)]);
   }
 
+  var SKILLS = ['grill-me','componentise','spec','tickets','spike','deep-review','handover'];
+
   var tail = [
     {h:''},
     {h:'  ' + w('d','fetching power-ups from charlieeclarke/charlie-and-the-skills-factory@main...'), pause:520},
     {h:''},
-    {gauge:0,  label:'warming up...',     pause:420},
-    {gauge:12, label:'got grill-me!',     pause:420},
-    {gauge:24, label:'got componentise!', pause:700},
-    {h:''},
-    {h:'  ' + w('bo gold', ST+'  '+ST+'  '+ST+'   L E V E L   U P !   '+ST+'  '+ST+'  '+ST), pause:340},
-    {h:''},
-    {h:'  ' + w('d','new abilities unlocked:')},
-    {h:'    ' + w('red',LA) + w('cream',DOT) + w('red',RA) + '  ' + w('bo green','/grill-me'), pause:200},
-    {h:'    ' + w('red',LA) + w('cream',DOT) + w('red',RA) + '  ' + w('bo green','/componentise'), pause:200},
-    {h:''},
-    {h:'  ' + w('d','Restart Claude Code to use them.')},
-    {h:'  ' + w('d','installed to:') + ' ' + w('grey','/Users/charlieclarke/.claude/skills')}
+    {gauge:0, label:'warming up...', pause:400}
   ];
+  SKILLS.forEach(function(s, i){
+    tail.push({
+      gauge: Math.round(CELLS * (i + 1) / SKILLS.length),
+      label: 'got ' + s + '!',
+      pause: i === SKILLS.length - 1 ? 700 : 260
+    });
+  });
+  tail.push({h:''});
+  tail.push({h:'  ' + w('bo gold', ST+'  '+ST+'  '+ST+'   L E V E L   U P !   '+ST+'  '+ST+'  '+ST), pause:340});
+  tail.push({h:''});
+  tail.push({h:'  ' + w('d','new abilities unlocked:')});
+  SKILLS.forEach(function(s){
+    tail.push({h:'    ' + w('red',LA) + w('cream',DOT) + w('red',RA) + '  ' + w('bo green','/' + s), pause:150});
+  });
+  tail.push({h:''});
+  tail.push({h:'  ' + w('d','Restart Claude Code to use them.')});
+  tail.push({h:'  ' + w('d','installed to:') + ' ' + w('grey','/Users/charlieclarke/.claude/skills')});
 
   function bannerLines(){
     var o = [];

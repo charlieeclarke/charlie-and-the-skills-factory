@@ -1,0 +1,15 @@
+Charlie & the Skills Factory
+============================
+
+The `grill-me` and `componentise` skills are original work.
+
+The `spec`, `tickets`, `spike`, `deep-review` and `handover` skills were
+written from scratch for this project, but the ideas behind them - and the
+workflow they form together - are derived from Matt Pocock's
+"Skills for Real Engineers":
+
+    https://github.com/mattpocock/skills
+    MIT License, Copyright (c) 2026 Matt Pocock
+
+No text from that project is reproduced here. The notice is kept as credit
+for the original thinking.

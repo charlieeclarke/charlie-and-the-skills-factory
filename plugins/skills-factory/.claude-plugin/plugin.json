@@ -1,6 +1,6 @@
 {
   "name": "skills-factory",
-  "description": "Two skills for the planning-then-refactoring pipeline: grill-me and componentise.",
+  "description": "Seven skills for the plan-build-review loop: grill-me, componentise, spec, tickets, spike, deep-review and handover.",
   "version": "1.0.0",
   "author": {
     "name": "Charlie Clarke"

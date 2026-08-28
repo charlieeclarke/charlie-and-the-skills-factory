@@ -7,7 +7,7 @@ set -e
 REPO="charlieeclarke/charlie-and-the-skills-factory"
 BRANCH="${SKILLS_FACTORY_REF:-main}"
 DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
-SKILLS="grill-me componentise"
+SKILLS="grill-me componentise spec tickets spike deep-review handover"
 
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
   B=$(printf '\033[1m'); D=$(printf '\033[2m'); Z=$(printf '\033[0m')
