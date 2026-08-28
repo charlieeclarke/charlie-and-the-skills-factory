@@ -1,0 +1,308 @@
+<title>Charlie &amp; the Skills Factory</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+  :root{
+    --ground:#0d0b16; --panel:#141024; --screen:#0a0813; --edge:#2a2340;
+    --ink:#e6e0f5; --muted:#7d7597; --dim:#544d6b;
+    --red:#e8404a; --cream:#f7e6c4; --gold:#ffcb2e; --green:#6fd08c;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    line-height:1.6; padding:clamp(20px,5vw,56px) clamp(16px,4vw,32px) 64px;
+  }
+  .wrap{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+  header{display:flex;flex-direction:column;gap:14px}
+  .brand{
+    font-family:"Press Start 2P",monospace;
+    font-size:clamp(13px,3.1vw,20px); line-height:1.7;
+    text-wrap:balance; margin:0;
+  }
+  .brand .a{color:var(--gold)} .brand .b{color:var(--red)}
+  .tag{margin:0;color:var(--muted);font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+
+  .screen{
+    background:var(--screen); border:1px solid var(--edge); border-radius:6px;
+    padding:22px clamp(14px,3vw,26px) 26px; position:relative; overflow:hidden;
+    box-shadow:0 0 0 1px #000 inset, 0 18px 50px -30px #000;
+  }
+  .screen::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(to bottom,rgba(255,255,255,.022) 0 1px,transparent 1px 3px);
+  }
+  .bezel{
+    display:flex;align-items:center;gap:8px;
+    padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--edge);
+  }
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--edge)}
+  .dot.live{background:var(--green)}
+  .bezel span{margin-left:6px;font-size:11px;color:var(--muted);letter-spacing:.1em}
+
+  pre.out{
+    margin:0; font-family:"JetBrains Mono",monospace;
+    font-size:clamp(8px,1.28vw,11px); line-height:1.5;
+    white-space:pre; overflow:auto;
+    height:min(64vh,620px);
+    scrollbar-width:thin;
+  }
+  pre.out::-webkit-scrollbar{width:8px;height:8px}
+  pre.out::-webkit-scrollbar-thumb{background:var(--edge);border-radius:4px}
+
+  .red{color:var(--red)} .cream{color:var(--cream)} .gold{color:var(--gold)}
+  .green{color:var(--green)} .grey{color:var(--muted)} .d{color:var(--dim)}
+  .bo{font-weight:700} .prompt{color:var(--green)}
+
+  .cursor{
+    display:inline-block;width:.62em;height:1.05em;background:var(--cream);
+    vertical-align:-2px;animation:blink 1.05s steps(1,end) infinite;
+  }
+  @keyframes blink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+
+  .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:18px}
+  button{
+    font-family:"Press Start 2P",monospace;font-size:10px;line-height:1.6;
+    color:var(--ground);background:var(--gold);border:none;border-radius:4px;
+    padding:11px 15px;cursor:pointer;box-shadow:0 3px 0 #b98c00;
+    transition:transform .08s ease, box-shadow .08s ease;
+  }
+  button:hover{transform:translateY(1px);box-shadow:0 2px 0 #b98c00}
+  button:active{transform:translateY(3px);box-shadow:0 0 0 #b98c00}
+  button:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+  button.ghost{background:transparent;color:var(--muted);box-shadow:0 0 0 1px var(--edge) inset}
+  button.ghost:hover{color:var(--ink)}
+
+  .paths{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .card{
+    background:var(--panel);border:1px solid var(--edge);border-radius:6px;
+    padding:20px;display:flex;flex-direction:column;gap:10px;
+  }
+  .card h2{margin:0;font-family:"Press Start 2P",monospace;font-size:11px;line-height:1.7;color:var(--cream)}
+  .card p{margin:0;font-size:12.5px;color:var(--muted)}
+  .card code{
+    display:block;white-space:pre-wrap;overflow-wrap:anywhere;
+    background:var(--screen);border:1px solid var(--edge);border-radius:4px;
+    padding:11px 12px;font-size:11.5px;line-height:1.7;color:var(--green);
+  }
+  .note{font-size:12px;color:var(--muted);margin:0}
+  .note b{color:var(--cream);font-weight:400}
+  @media (prefers-reduced-motion:reduce){.cursor{animation:none}button{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1 class="brand"><span class="a">CHARLIE &amp; THE</span><br><span class="b">SKILLS FACTORY</span></h1>
+    <p class="tag">1-UP your Claude Code &middot; installer preview</p>
+  </header>
+
+  <div>
+    <div class="screen">
+      <div class="bezel">
+        <i class="dot live"></i><i class="dot"></i><i class="dot"></i>
+        <span>zsh &mdash; install.sh</span>
+      </div>
+      <pre class="out" id="out" aria-live="polite" tabindex="0"></pre>
+    </div>
+    <div class="controls">
+      <button id="replay">&#9654; Replay</button>
+      <button class="ghost" id="skip">Skip to end</button>
+    </div>
+  </div>
+
+  <div class="paths">
+    <div class="card">
+      <h2>One-liner</h2>
+      <p>Drops both skills into <b>~/.claude/skills/</b>, so they keep their bare names &mdash; <b>/grill-me</b> and <b>/componentise</b>.</p>
+      <code>curl -fsSL https://raw.githubusercontent.com/charlieeclarke/charlie-and-the-skills-factory/main/install.sh | sh</code>
+    </div>
+    <div class="card">
+      <h2>Plugin marketplace</h2>
+      <p>Managed and updatable through <b>/plugin</b>. Skills are namespaced &mdash; <b>/skills-factory:grill-me</b>.</p>
+      <code>/plugin marketplace add charlieeclarke/charlie-and-the-skills-factory
+/plugin install skills-factory@charlie-and-the-skills-factory</code>
+    </div>
+  </div>
+
+  <p class="note">A skill of the same name is never overwritten blind &mdash; it is moved to <b>~/.claude/skills/.factory-backup/</b> with a timestamp first.</p>
+</div>
+
+<script>
+(function(){
+  var out = document.getElementById('out');
+  var replay = document.getElementById('replay');
+  var skip = document.getElementById('skip');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var timers = [];
+
+  var CELLS = 24, WALK = 44, TYPE_MS = 11, CELL_MS = 55, BANNER_MS = 11;
+
+  var UB='\u2584', FB='\u2588', TB='\u2580', LH='\u2590', RH='\u258c', SH='\u2591',
+      GR='\u2581', ST='\u2605', LA='\u25c4', DOT='\u25cf', RA='\u25ba';
+
+  function R(ch,n){ return new Array(n+1).join(ch); }
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  function sp(n){ return R(' ',n); }
+  function w(cls,s){ return '<span class="' + cls + '">' + s + '</span>'; }
+
+  var BANNER_WORDS = [["      .,                                                               ,;", "     ,Wt .    .                  j.                    i   t         f#i", "    i#D. Di   Dt              .. EW,                  LE   Ej      .E#t", "   f#f   E#i  E#i            ;W, E##j                L#E   E#,    i#W,", " .D#i    E#t  E#t           j##, E###D.             G#W.   E#t   L#D.", ":KW,     E#t  E#t          G###, E#jG#W;           D#K.    E#t :K#Wfff;", "t#f      E########f.     :E####, E#t t##f         E#K.     E#t i##WLLLLt", " ;#G     E#j..K#j...    ;W#DG##, E#t  :K#E:     .E#E.      E#t  .E#L", "  :KE.   E#t  E#t      j###DW##, E#KDDDD###i   .K#E        E#t    f#E:", "   .DW:  E#t  E#t     G##i,,G##, E#f,t#Wi,,,  .K#D         E#t     ,WW;", "     L#, f#t  f#t   :K#K:   L##, E#t  ;#W:   .W#G          E#t      .D#;", "      jt  ii   ii  ;##D.    L##, DWi   ,KK: :W##########Wt E#t        tt", "                   ,,,      .,,             :,,,,,,,,,,,,,.,;."], ["                             ;", "                             ED.", "              L.             E#Wi                                        ,;", "              EW:        ,ft E###G.                  .    .            f#i", "           .. E##;       t#E E#fD#W;        GEEEEEEELDi   Dt         .E#t", "          ;W, E###t      t#E E#t t##L       ,;;L#K;;.E#i  E#i       i#W,", "         j##, E#fE#f     t#E E#t  .E#K,        t#E   E#t  E#t      L#D.", "        G###, E#t D#G    t#E E#t    j##f       t#E   E#t  E#t    :K#Wfff;", "      :E####, E#t  f#E.  t#E E#t    :E#K:      t#E   E########f. i##WLLLLt", "     ;W#DG##, E#t   t#K: t#E E#t   t##L        t#E   E#j..K#j...  .E#L", "    j###DW##, E#t    ;#W,t#E E#t .D#W;         t#E   E#t  E#t       f#E:", "   G##i,,G##, E#t     :K#D#E E#tiW#G.          t#E   E#t  E#t        ,WW;", " :K#K:   L##, E#t      .E##E E#K##i            t#E   f#t  f#t         .D#;", ";##D.    L##, ..         G#E E##D.              fE    ii   ii           tt", ",,,      .,,              fE E#t                 :", "                           , L:"], ["         . G:                                                 .", "        ;W E#,    :t              i              i           ;W", "       f#E E#t  .GEEj            LE             LE          f#E", "     .E#f  E#t j#K;E#,          L#E            L#E        .E#f", "    iWW;   E#GK#f  E#t         G#W.           G#W.       iWW;", "   L##Lffi E##D.   E#t        D#K.           D#K.       L##Lffi", "  tLLG##L  E##Wi   E#t       E#K.           E#K.       tLLG##L", "    ,W#i   E#jL#D: E#t     .E#E.          .E#E.          ,W#i", "   j#E.    E#t ,K#jE#t    .K#E           .K#E           j#E.", " .D#j      E#t   jDE#t   .K#D           .K#D          .D#j", ",WK,       j#t     E#t  .W#G           .W#G          ,WK,", "EG.         ,;     E#t :W##########Wt :W##########Wt EG.", ",                  ,;. :,,,,,,,,,,,,,.:,,,,,,,,,,,,,.,"], ["   ,", "   Et                                          :", "   E#t                        .,              t#,", "   E##t                      ,Wt             ;##W.   j.", "   E#W#t             ..     i#D. GEEEEEEEL  :#L:WE   EW,        f.     ;WE.", "   E#tfL.           ;W,    f#f   ,;;L#K;;. .KG  ,#D  E##j       E#,   i#G", "   E#t             j##,  .D#i       t#E    EE    ;#f E###D.     E#t  f#f", ",ffW#Dffj.        G###, :KW,        t#E   f#.     t#iE#jG#W;    E#t G#i", " ;LW#ELLLf.     :E####, t#f         t#E   :#G     GK E#t t##f   E#jEW,", "   E#t         ;W#DG##,  ;#G        t#E    ;#L   LW. E#t  :K#E: E##E.", "   E#t        j###DW##,   :KE.      t#E     t#f f#:  E#KDDDD###iE#G", "   E#t       G##i,,G##,    .DW:     t#E      f#D#;   E#f,t#Wi,,,E#t", "   E#t     :K#K:   L##,      L#,    t#E       G#t    E#t  ;#W:  E#t", "   E#t    ;##D.    L##,       jt     fE        t     DWi   ,KK: EE.", "   ;#t    ,,,      .,,                :                         t", "    :;"]];
+  var BANNER_CLASS = ['gold','grey','red','red'];
+
+  var CMD = '$ curl -fsSL https://raw.githubusercontent.com/charlieeclarke/'
+          + 'charlie-and-the-skills-factory/main/install.sh | sh';
+
+  // The mushroom walks right and grows as the gauge fills. Mirrors install.sh.
+  function sprite(cell){
+    var pad = sp(2 + Math.floor(cell * WALK / CELLS));
+    var rows;
+    if (cell < 8){
+      rows = [
+        w('red', ' ' + R(UB,3) + ' '),
+        w('red', UB + R(FB,3) + UB),
+        w('cream', ' ' + R(FB,3) + ' '),
+        w('cream', ' ' + R(TB,3) + ' ')
+      ];
+    } else if (cell < 16){
+      rows = [
+        w('red', sp(3) + R(UB,5)),
+        w('red', ' ' + UB + R(FB,7) + UB),
+        w('red', R(FB,2)) + ' ' + w('cream', R(UB,2)) + ' ' + w('cream', R(UB,2)) + ' ' + w('red', R(FB,2)),
+        w('red', TB + R(FB,9) + TB),
+        w('cream', sp(3) + R(FB,5)),
+        w('cream', sp(3) + TB + R(FB,3) + TB)
+      ];
+    } else {
+      rows = [
+        w('red', sp(7) + R(UB,8)),
+        w('red', sp(5) + UB + R(FB,9) + UB),
+        w('red', sp(4) + R(FB,3)) + ' ' + w('cream', R(UB,2)) + '  ' + w('cream', R(UB,2)) + ' ' + w('red', R(FB,3)),
+        w('red', sp(4) + R(FB,3)) + ' ' + w('cream', R(FB,2)) + '  ' + w('cream', R(FB,2)) + ' ' + w('red', R(FB,3)),
+        w('red', sp(4) + TB + R(FB,13) + TB),
+        w('cream', sp(7) + R(FB,9)),
+        w('cream', sp(7) + R(FB,9)),
+        w('cream', sp(7) + TB + R(FB,7) + TB)
+      ];
+    }
+    var block = [];
+    while (block.length < 8 - rows.length) block.push('');
+    for (var i = 0; i < rows.length; i++) block.push(pad + rows[i]);
+    return block;
+  }
+
+  function gaugeRow(f, label){
+    var pct = String(Math.round(f * 100 / CELLS));
+    while (pct.length < 3) pct = ' ' + pct;
+    return '  ' + w('bo','POWER') + ' ' + w('grey',LH)
+         + w('gold', R(FB,f)) + w('d', R(SH, CELLS - f))
+         + w('grey',RH) + ' ' + w('bo', pct + '%') + '  ' + w('green', esc(label));
+  }
+
+  function frame(cell, label){
+    return sprite(cell).concat(['  ' + w('d', R(GR,60)), gaugeRow(cell, label)]);
+  }
+
+  var tail = [
+    {h:''},
+    {h:'  ' + w('d','1-UP your Claude Code')},
+    {h:''},
+    {h:'  ' + w('d','fetching power-ups from charlieeclarke/charlie-and-the-skills-factory@main...'), pause:520},
+    {h:''},
+    {gauge:0,  label:'warming up...',     pause:420},
+    {gauge:12, label:'got grill-me!',     pause:420},
+    {gauge:24, label:'got componentise!', pause:700},
+    {h:''},
+    {h:'  ' + w('bo gold', ST+'  '+ST+'  '+ST+'   L E V E L   U P !   '+ST+'  '+ST+'  '+ST), pause:340},
+    {h:''},
+    {h:'  ' + w('d','new abilities unlocked:')},
+    {h:'    ' + w('red',LA) + w('cream',DOT) + w('red',RA) + '  ' + w('bo green','/grill-me'), pause:200},
+    {h:'    ' + w('red',LA) + w('cream',DOT) + w('red',RA) + '  ' + w('bo green','/componentise'), pause:200},
+    {h:''},
+    {h:'  ' + w('d','Restart Claude Code to use them.')},
+    {h:'  ' + w('d','installed to:') + ' ' + w('grey','/Users/charlieclarke/.claude/skills')}
+  ];
+
+  function bannerLines(){
+    var o = [];
+    for (var i = 0; i < BANNER_WORDS.length; i++)
+      for (var j = 0; j < BANNER_WORDS[i].length; j++)
+        o.push('  ' + w(BANNER_CLASS[i], esc(BANNER_WORDS[i][j])));
+    return o;
+  }
+
+  function stopAll(){ timers.forEach(clearTimeout); timers = []; }
+
+  function renderAll(){
+    stopAll();
+    var l = [w('prompt', esc(CMD)), ''].concat(bannerLines());
+    var done = false;
+    tail.forEach(function(s){
+      if (s.gauge !== undefined){
+        if (!done && s.gauge === CELLS){ l = l.concat(frame(CELLS, s.label)); done = true; }
+        return;
+      }
+      l.push(s.h);
+    });
+    out.innerHTML = l.join('\n');
+    out.scrollTop = out.scrollHeight;
+  }
+
+  function run(){
+    stopAll();
+    var lines = [], blockIdx = -1, t = 0, i, v;
+
+    function paint(){ out.innerHTML = lines.join('\n'); out.scrollTop = out.scrollHeight; }
+    function at(time, fn){ timers.push(setTimeout(fn, time)); }
+    function setFrame(cell, label){
+      var f = frame(cell, label);
+      if (blockIdx < 0){ blockIdx = lines.length; for (var k = 0; k < f.length; k++) lines.push(f[k]); }
+      else for (var k2 = 0; k2 < f.length; k2++) lines[blockIdx + k2] = f[k2];
+    }
+
+    out.innerHTML = '';
+
+    for (i = 0; i <= CMD.length; i++){
+      (function(n){
+        at(t + n * TYPE_MS, function(){
+          lines[0] = w('prompt', esc(CMD.slice(0,n))) + '<span class="cursor"></span>';
+          paint();
+        });
+      })(i);
+    }
+    t += CMD.length * TYPE_MS + 340;
+    at(t, function(){ lines[0] = w('prompt', esc(CMD)); lines[1] = ''; paint(); });
+    t += 120;
+
+    var bl = bannerLines();
+    for (i = 0; i < bl.length; i++){
+      (function(html){ at(t, function(){ lines.push(html); paint(); }); })(bl[i]);
+      t += BANNER_MS;
+    }
+    t += 260;
+
+    var last = 0, created = false;
+    for (i = 0; i < tail.length; i++){
+      var s = tail[i];
+      if (s.gauge === undefined){
+        (function(html){ at(t, function(){ lines.push(html); paint(); }); })(s.h);
+        t += s.pause || 46;
+        continue;
+      }
+      if (!created){
+        (function(label){ at(t, function(){ setFrame(0, label); paint(); }); })(s.label);
+        created = true;
+        t += 60;
+      }
+      for (v = last + 1; v <= s.gauge; v++){
+        (function(val,label){ at(t, function(){ setFrame(val,label); paint(); }); })(v, s.label);
+        t += CELL_MS;
+      }
+      (function(val,label){ at(t, function(){ setFrame(val,label); paint(); }); })(s.gauge, s.label);
+      last = s.gauge;
+      t += s.pause || 260;
+    }
+  }
+
+  replay.addEventListener('click', function(){ reduce ? renderAll() : run(); });
+  skip.addEventListener('click', renderAll);
+  if (reduce) renderAll(); else run();
+})();
+</script>
