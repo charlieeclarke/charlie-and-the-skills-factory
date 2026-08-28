@@ -10,15 +10,85 @@ const CELLS = 24;
 const WALK = 44;
 const FRAME_H = 10;
 
-const args = process.argv.slice(2);
-const projectMode = args.includes('--project') || args.includes('-p');
 const VERSION = require('../package.json').version;
-
-const DEST = process.env.CLAUDE_SKILLS_DIR || (projectMode
-  ? path.join(process.cwd(), '.claude', 'skills')
-  : path.join(os.homedir(), '.claude', 'skills'));
 const SRC = path.join(__dirname, '..', 'plugins', 'skills-factory', 'skills');
-const MARKER = () => path.join(DEST, '.factory-version');
+
+// Paths per agent, as published by the agent-skills ecosystem.
+// .agents/skills is the shared project location for Codex, Cursor, Cline, Zed and others.
+const AGENTS = {
+  'claude-code': {
+    label: 'Claude Code',
+    project: () => path.join(process.cwd(), '.claude', 'skills'),
+    global: () => path.join(os.homedir(), '.claude', 'skills')
+  },
+  codex: {
+    label: 'Codex',
+    project: () => path.join(process.cwd(), '.agents', 'skills'),
+    global: () => path.join(os.homedir(), '.codex', 'skills')
+  }
+};
+
+const args = process.argv.slice(2);
+const has = (...names) => names.some((n) => args.includes(n));
+const valueOf = (name) => {
+  const i = args.indexOf(name);
+  return i >= 0 ? args[i + 1] : null;
+};
+
+let chosenAgents = (valueOf('--agent') || '').split(',').filter(Boolean);
+let projectMode = has('--project', '-p');
+const globalMode = has('--global', '-g');
+const noPrompt = has('--yes', '-y') || Boolean(process.env.CLAUDE_SKILLS_DIR);
+const interactive = Boolean(process.stdin.isTTY && process.stdout.isTTY) && !noPrompt;
+
+function ask(question, options) {
+  return new Promise((resolve) => {
+    const rl = require('readline').createInterface({
+      input: process.stdin, output: process.stdout
+    });
+    say('');
+    say('  ' + e.B + question + e.Z);
+    options.forEach((o, i) => say('    ' + e.GOLD + (i + 1) + e.Z + '  ' + o.label));
+    rl.question('  ' + e.D + '> ' + e.Z, (answer) => {
+      rl.close();
+      const n = parseInt(String(answer).trim(), 10);
+      resolve(options[Number.isFinite(n) && n >= 1 && n <= options.length ? n - 1 : 0].value);
+    });
+  });
+}
+
+async function resolveTargets() {
+  if (process.env.CLAUDE_SKILLS_DIR) {
+    return [{ label: 'Claude Code', dest: process.env.CLAUDE_SKILLS_DIR }];
+  }
+
+  if (!chosenAgents.length) {
+    chosenAgents = interactive
+      ? await ask('Which agent?', [
+          { label: 'Claude Code', value: ['claude-code'] },
+          { label: 'Codex', value: ['codex'] },
+          { label: 'Both', value: ['claude-code', 'codex'] }
+        ])
+      : ['claude-code'];
+  }
+
+  let scope = projectMode ? 'project' : globalMode ? 'global' : null;
+  if (!scope) {
+    scope = interactive
+      ? await ask('Install where?', [
+          { label: 'Just me' + e.D + '  (all your projects)' + e.Z, value: 'global' },
+          { label: 'This project' + e.D + '  (commit it, whole team gets them)' + e.Z, value: 'project' }
+        ])
+      : 'global';
+  }
+  projectMode = scope === 'project';
+
+  return chosenAgents
+    .filter((a) => AGENTS[a])
+    .map((a) => ({ label: AGENTS[a].label, dest: AGENTS[a][scope]() }));
+}
+
+const markerFor = (dest) => path.join(dest, '.factory-version');
 
 const live = Boolean(process.stdout.isTTY) && !process.env.NO_COLOR;
 const e = live
@@ -112,12 +182,12 @@ function copyDir(from, to) {
   }
 }
 
-function readMarker() {
-  try { return JSON.parse(fs.readFileSync(MARKER(), 'utf8')); } catch (err) { return null; }
+function readMarker(dest) {
+  try { return JSON.parse(fs.readFileSync(markerFor(dest), 'utf8')); } catch (err) { return null; }
 }
 
-function writeMarker(skills) {
-  fs.writeFileSync(MARKER(), JSON.stringify({
+function writeMarker(dest, skills) {
+  fs.writeFileSync(markerFor(dest), JSON.stringify({
     version: VERSION, installed: new Date().toISOString(), skills
   }, null, 2) + '\n');
 }
@@ -134,51 +204,60 @@ async function main() {
 
   if (!fs.existsSync(SRC)) die('the crate arrived empty - no skills/ inside the package.');
 
-  const destExisted = fs.existsSync(DEST);
-  fs.mkdirSync(DEST, { recursive: true });
+  const targets = await resolveTargets();
+  if (!targets.length) die('no known agent selected. Use --agent claude-code or --agent codex.');
+
+  targets.forEach((t) => {
+    t.existed = fs.existsSync(t.dest);
+    t.previous = readMarker(t.dest);
+    fs.mkdirSync(t.dest, { recursive: true });
+  });
 
   const d = new Date();
   const p2 = (n) => String(n).padStart(2, '0');
   const stamp = String(d.getFullYear()) + p2(d.getMonth() + 1) + p2(d.getDate()) +
     '-' + p2(d.getHours()) + p2(d.getMinutes()) + p2(d.getSeconds());
-  const previous = readMarker();
+
   const installed = [];
   const skipped = [];
   let backedUp = false;
   let cur = 0;
 
+  say('');
   frame(0, 'warming up...');
   await sleep(400);
 
   for (let i = 0; i < SKILLS.length; i++) {
     const s = SKILLS[i];
-    const target = Math.round((CELLS * (i + 1)) / SKILLS.length);
+    const mark = Math.round((CELLS * (i + 1)) / SKILLS.length);
 
     if (!fs.existsSync(path.join(SRC, s, 'SKILL.md'))) { skipped.push(s); continue; }
 
-    const dst = path.join(DEST, s);
-    if (fs.existsSync(dst)) {
-      const backup = path.join(DEST, '.factory-backup');
-      fs.mkdirSync(backup, { recursive: true });
-      let target = path.join(backup, s + '-' + stamp);
-      for (let n = 2; fs.existsSync(target); n++) {
-        target = path.join(backup, s + '-' + stamp + '-' + n);
+    targets.forEach((t) => {
+      const dst = path.join(t.dest, s);
+      if (fs.existsSync(dst)) {
+        const backup = path.join(t.dest, '.factory-backup');
+        fs.mkdirSync(backup, { recursive: true });
+        let to = path.join(backup, s + '-' + stamp);
+        for (let n = 2; fs.existsSync(to); n++) {
+          to = path.join(backup, s + '-' + stamp + '-' + n);
+        }
+        fs.renameSync(dst, to);
+        backedUp = true;
       }
-      fs.renameSync(dst, target);
-      backedUp = true;
-    }
-    copyDir(path.join(SRC, s), dst);
+      copyDir(path.join(SRC, s), dst);
+    });
     installed.push(s);
 
     if (live) {
-      while (cur < target) {
+      while (cur < mark) {
         cur += 1;
         up(FRAME_H);
         frame(cur, 'got ' + s + '!');
         await sleep(50);
       }
     } else {
-      cur = target;
+      cur = mark;
       frame(cur, 'got ' + s + '!');
     }
     await sleep(300);
@@ -197,24 +276,30 @@ async function main() {
   });
   say('');
   skipped.forEach((s) => say('  ' + e.RED + 'x missing from the package: ' + s + e.Z));
-  writeMarker(installed);
 
-  if (previous && previous.version !== VERSION) {
-    say('  ' + e.D + 'updated:' + e.Z + ' ' + previous.version + ' ' + RA + ' ' + e.B + VERSION + e.Z);
+  const upgraded = targets.find((t) => t.previous && t.previous.version !== VERSION);
+  if (upgraded) {
+    say('  ' + e.D + 'updated:' + e.Z + ' ' + upgraded.previous.version + ' ' + RA + ' ' + e.B + VERSION + e.Z);
   } else {
     say('  ' + e.D + 'version:' + e.Z + ' ' + VERSION);
   }
-  if (destExisted) {
-    say('  ' + e.D + 'Claude Code picks these up automatically - no restart needed.' + e.Z);
-  } else {
-    say('  ' + e.D + 'Restart Claude Code so it starts watching this new folder.' + e.Z);
+
+  targets.forEach((t) => {
+    writeMarker(t.dest, installed);
+    say('  ' + e.D + t.label + ':' + e.Z + ' ' + t.dest);
+    if (!t.existed) {
+      say('    ' + e.D + 'restart ' + t.label + ' so it starts watching this new folder.' + e.Z);
+    }
+  });
+
+  if (targets.every((t) => t.existed)) {
+    say('  ' + e.D + 'picked up automatically - no restart needed.' + e.Z);
   }
-  say('  ' + e.D + 'installed to:' + e.Z + ' ' + DEST);
   if (projectMode) {
-    say('  ' + e.D + 'commit .claude/skills/ so everyone gets these on clone.' + e.Z);
+    say('  ' + e.D + 'commit these folders so everyone gets them on clone.' + e.Z);
   }
   if (backedUp) {
-    say('  ' + e.D + 'previous versions kept in:' + e.Z + ' ' + path.join(DEST, '.factory-backup'));
+    say('  ' + e.D + 'previous versions kept in each .factory-backup/' + e.Z);
   }
   say('');
 }

@@ -78,17 +78,59 @@ Downloads the repo tarball and copies the skills out of it. No Node required.
 
 Managed and updatable through `/plugin`. Note the skills are namespaced by the plugin here: `/skills-factory:grill-me`, `/skills-factory:componentise`.
 
-### What the installers do
+### Where the skills go
 
-Both the npm and shell installers copy the skill folders into `~/.claude/skills/`, so the skills keep their bare names. Restart Claude Code afterwards.
+Both installers ask two questions, or take them as flags:
 
-If a skill of the same name is already there, it is **moved** to `~/.claude/skills/.factory-backup/<name>-<timestamp>` first — nothing is overwritten blind.
+**Which agent?** Claude Code, Codex, or both.
+
+**Where?** Just you, or this project.
+
+| Agent | Just me | This project |
+| --- | --- | --- |
+| Claude Code | `~/.claude/skills/` | `.claude/skills/` |
+| Codex | `~/.codex/skills/` | `.agents/skills/` |
+
+`.agents/skills/` is the shared project location, so installing for Codex also covers Cursor, Cline, Zed and several others.
+
+Choosing **this project** and committing the folder means everyone who clones the repo gets the skills with no install step at all. One caveat: **a personal skill overrides a project one of the same name**, so a teammate with their own `~/.claude/skills/spec` will get theirs, not the repo's. If the repo's version must always win, use the plugin route — those are namespaced and never collide.
+
+Skipping the questions:
+
+```sh
+npx charlie-and-the-skills-factory --agent claude-code,codex --project
+```
+
+| Flag | Effect |
+| --- | --- |
+| `--agent <list>` | `claude-code`, `codex`, or both comma-separated |
+| `--project` / `-p` | Install into the current project |
+| `--global` / `-g` | Install for just you |
+| `--yes` / `-y` | Skip the prompts, take the defaults |
+
+Non-interactive runs (CI, piped input) default to Claude Code, just-me, and never prompt.
+
+### Updating
+
+Re-run the installer. It replaces the skills in place and reports `updated: 1.0.0 ► 1.1.0`.
+
+Claude Code picks up the change live, without a restart — the only exception is a first-ever install into a folder that didn't exist when the session started, and the installer tells you when that applies.
+
+A skill of the same name is never overwritten blind: it is moved to `.factory-backup/<name>-<timestamp>` alongside the skills first.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `CLAUDE_SKILLS_DIR` | `~/.claude/skills` | Where skills are installed |
+| `CLAUDE_SKILLS_DIR` | — | Install to an exact path, ignoring agent and scope |
 | `SKILLS_FACTORY_REF` | `main` | Branch or tag to install from (shell installer only) |
-| `NO_COLOR` | unset | Set to disable colour and animation |
+| `NO_COLOR` | unset | Disable colour and animation |
+
+### Other agents
+
+For anything beyond Claude Code and Codex, [`npx skills`](https://github.com/vercel-labs/skills) installs to around 25 agents:
+
+```sh
+npx skills@latest add charlieeclarke/charlie-and-the-skills-factory
+```
 
 ## Uninstall
 

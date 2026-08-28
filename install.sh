@@ -6,12 +6,17 @@ set -e
 
 REPO="charlieeclarke/charlie-and-the-skills-factory"
 BRANCH="${SKILLS_FACTORY_REF:-main}"
-PROJECT=
-for _a in "$@"; do
-  case "$_a" in --project|-p) PROJECT=1 ;; esac
+PROJECT=; GLOBAL=; YES=; AGENT_SEL=
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --agent) AGENT_SEL="$2"; shift 2 ;;
+    --agent=*) AGENT_SEL="${1#*=}"; shift ;;
+    --project|-p) PROJECT=1; shift ;;
+    --global|-g) GLOBAL=1; shift ;;
+    --yes|-y) YES=1; shift ;;
+    *) shift ;;
+  esac
 done
-if [ -n "$PROJECT" ]; then _default="$PWD/.claude/skills"; else _default="$HOME/.claude/skills"; fi
-DEST="${CLAUDE_SKILLS_DIR:-$_default}"
 SKILLS="grill-me componentise spec tickets spike deep-review handover"
 
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
@@ -158,6 +163,70 @@ gauge() {
 
 frame() { draw_sprite "$1"; ground; gauge "$1" "$2"; }
 
+# ---- where do the skills go ----
+agent_label() {
+  case "$1" in claude-code) printf 'Claude Code' ;; codex) printf 'Codex' ;; *) printf '%s' "$1" ;; esac
+}
+
+agent_path() {
+  case "$1:$2" in
+    claude-code:project) printf '%s' "$PWD/.claude/skills" ;;
+    claude-code:global)  printf '%s' "$HOME/.claude/skills" ;;
+    codex:project)       printf '%s' "$PWD/.agents/skills" ;;
+    codex:global)        printf '%s' "$HOME/.codex/skills" ;;
+  esac
+}
+
+ask_tty() {
+  [ -r /dev/tty ] || { printf '1'; return; }
+  _q="$1"; shift
+  {
+    printf '\n  %s%s%s\n' "$B" "$_q" "$Z"
+    _i=1
+    for _o in "$@"; do printf '    %s%s%s  %s\n' "$GOLD" "$_i" "$Z" "$_o"; _i=$((_i + 1)); done
+    printf '  %s> %s' "$D" "$Z"
+  } > /dev/tty
+  read _ans < /dev/tty || _ans=1
+  case "$_ans" in 1|2|3) printf '%s' "$_ans" ;; *) printf '1' ;; esac
+}
+
+INTERACTIVE=
+[ -n "$TTY" ] && [ -z "$YES" ] && [ -z "${CLAUDE_SKILLS_DIR:-}" ] && [ -r /dev/tty ] && INTERACTIVE=1
+
+if [ -z "$AGENT_SEL" ]; then
+  if [ -n "$INTERACTIVE" ]; then
+    case "$(ask_tty 'Which agent?' 'Claude Code' 'Codex' 'Both')" in
+      2) AGENT_SEL="codex" ;;
+      3) AGENT_SEL="claude-code codex" ;;
+      *) AGENT_SEL="claude-code" ;;
+    esac
+  else
+    AGENT_SEL="claude-code"
+  fi
+fi
+AGENT_SEL=$(printf '%s' "$AGENT_SEL" | tr ',' ' ')
+
+if [ -n "$PROJECT" ]; then SCOPE=project
+elif [ -n "$GLOBAL" ]; then SCOPE=global
+elif [ -n "$INTERACTIVE" ]; then
+  case "$(ask_tty 'Install where?' 'Just me (all your projects)' 'This project (commit it, whole team gets them)')" in
+    2) SCOPE=project; PROJECT=1 ;;
+    *) SCOPE=global ;;
+  esac
+else SCOPE=global
+fi
+
+DESTS=
+if [ -n "${CLAUDE_SKILLS_DIR:-}" ]; then
+  DESTS="$CLAUDE_SKILLS_DIR"
+  AGENT_SEL="claude-code"
+else
+  for _a in $AGENT_SEL; do
+    _pth=$(agent_path "$_a" "$SCOPE")
+    [ -n "$_pth" ] && DESTS="$DESTS $_pth"
+  done
+fi
+
 # ---- run ----
 say ""
 print_banner
@@ -180,11 +249,12 @@ SRC=$(find "$TMP" -type d -name skills -path '*skills-factory*' 2>/dev/null | he
 
 VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$TMP"/*/package.json 2>/dev/null | head -1)
 [ -n "$VERSION" ] || VERSION="unknown"
-PREV=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$DEST/.factory-version" 2>/dev/null | head -1)
-
-DEST_EXISTED=
-[ -d "$DEST" ] && DEST_EXISTED=1
-mkdir -p "$DEST"
+PREV=; NEW_DESTS=; BACKED_UP=
+for _d in $DESTS; do
+  [ -n "$PREV" ] || PREV=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$_d/.factory-version" 2>/dev/null | head -1)
+  [ -d "$_d" ] || NEW_DESTS="$NEW_DESTS $_d"
+  mkdir -p "$_d"
+done
 STAMP=$(date +%Y%m%d-%H%M%S)
 INSTALLED=; SKIPPED=
 
@@ -200,13 +270,16 @@ for s in $SKILLS; do
   DONE=$((DONE + 1))
   TARGET=$(( CELLS * DONE / TOTAL ))
   if [ ! -f "$SRC/$s/SKILL.md" ]; then SKIPPED="$SKIPPED $s"; continue; fi
-  if [ -d "$DEST/$s" ]; then
-    mkdir -p "$DEST/.factory-backup"
-    _bk="$DEST/.factory-backup/$s-$STAMP"; _n=2
-    while [ -e "$_bk" ]; do _bk="$DEST/.factory-backup/$s-$STAMP-$_n"; _n=$((_n + 1)); done
-    mv "$DEST/$s" "$_bk"
-  fi
-  cp -R "$SRC/$s" "$DEST/$s"
+  for _d in $DESTS; do
+    if [ -d "$_d/$s" ]; then
+      mkdir -p "$_d/.factory-backup"
+      _bk="$_d/.factory-backup/$s-$STAMP"; _n=2
+      while [ -e "$_bk" ]; do _bk="$_d/.factory-backup/$s-$STAMP-$_n"; _n=$((_n + 1)); done
+      mv "$_d/$s" "$_bk"
+      BACKED_UP=1
+    fi
+    cp -R "$SRC/$s" "$_d/$s"
+  done
   INSTALLED="$INSTALLED $s"
   if [ -n "$TTY" ]; then
     while [ "$CUR" -lt "$TARGET" ]; do
@@ -231,21 +304,29 @@ for s in $INSTALLED; do
 done
 say ""
 for s in $SKIPPED; do say "  ${RED}x missing from the crate: $s${Z}"; done
-printf '{\n  "version": "%s",\n  "installed": "%s",\n  "skills": [%s]\n}\n' \
-  "$VERSION" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-  "$(echo $INSTALLED | sed 's/ /", "/g; s/^/"/; s/$/"/')" > "$DEST/.factory-version"
+for _d in $DESTS; do
+  printf '{\n  "version": "%s",\n  "installed": "%s",\n  "skills": [%s]\n}\n' \
+    "$VERSION" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    "$(echo $INSTALLED | sed 's/ /", "/g; s/^/"/; s/$/"/')" > "$_d/.factory-version"
+done
 
-if [ -n "$DEST_EXISTED" ]; then
-  say "  ${D}Claude Code picks these up automatically - no restart needed.${Z}"
-else
-  say "  ${D}Restart Claude Code so it starts watching this new folder.${Z}"
-fi
 if [ -n "$PREV" ] && [ "$PREV" != "$VERSION" ]; then
   say "  ${D}updated:${Z} $PREV ${RED}►${Z} ${B}${VERSION}${Z}"
 else
   say "  ${D}version:${Z} $VERSION"
 fi
-say "  ${D}installed to:${Z} $DEST"
-[ -n "$PROJECT" ] && say "  ${D}commit .claude/skills/ so everyone gets these on clone.${Z}"
-[ -d "$DEST/.factory-backup" ] && say "  ${D}previous versions kept in:${Z} $DEST/.factory-backup"
+
+_i=1
+for _d in $DESTS; do
+  _ag=$(echo $AGENT_SEL | cut -d' ' -f$_i)
+  say "  ${D}$(agent_label "$_ag"):${Z} $_d"
+  case " $NEW_DESTS " in
+    *" $_d "*) say "    ${D}restart $(agent_label "$_ag") so it starts watching this new folder.${Z}" ;;
+  esac
+  _i=$((_i + 1))
+done
+
+[ -z "$NEW_DESTS" ] && say "  ${D}picked up automatically - no restart needed.${Z}"
+[ -n "$PROJECT" ] && say "  ${D}commit these folders so everyone gets them on clone.${Z}"
+[ -n "$BACKED_UP" ] && say "  ${D}previous versions kept in each .factory-backup/${Z}"
 say ""
