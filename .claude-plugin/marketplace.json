@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "charlie-and-the-skills-factory",
+  "description": "A small factory of hand-made Claude Code skills. Everything here is produced on site, wrapped, and shipped.",
+  "owner": {
+    "name": "Charlie Clarke",
+    "url": "https://github.com/charlieeclarke"
+  },
+  "plugins": [
+    {
+      "name": "skills-factory",
+      "description": "Two skills for the planning-then-refactoring pipeline: grill-me interrogates a plan until every decision is resolved, and componentise turns fat page files into a library of reusable section components.",
+      "author": {
+        "name": "Charlie Clarke"
+      },
+      "category": "productivity",
+      "source": "./plugins/skills-factory",
+      "homepage": "https://github.com/charlieeclarke/charlie-and-the-skills-factory"
+    }
+  ]
+}
