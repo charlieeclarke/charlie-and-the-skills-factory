@@ -5,7 +5,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const SKILLS = ['grill-me', 'componentise', 'spec', 'tickets', 'prototype', 'deep-review', 'handover'];
+const SKILLS = ['grill-me', 'componentise', 'spec', 'tickets', 'prototype', 'spec-review', 'handover'];
 const CELLS = 24;
 const WALK = 44;
 const FRAME_H = 10;

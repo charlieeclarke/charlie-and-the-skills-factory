@@ -1,6 +1,6 @@
 {
   "name": "skills-factory",
-  "description": "Seven skills for the plan-build-review loop: grill-me, componentise, spec, tickets, prototype, deep-review and handover.",
+  "description": "Seven skills for the plan-build-review loop: grill-me, componentise, spec, tickets, prototype, spec-review and handover.",
   "version": "1.0.0",
   "author": {
     "name": "Charlie Clarke"
