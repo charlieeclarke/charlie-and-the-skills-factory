@@ -1,6 +1,6 @@
 ---
 name: interview
-description: Interview the user relentlessly about every aspect of a plan or design until reaching shared understanding. Use when the user wants to be challenged on a plan, pressure-test a design, resolve open decisions one by one, or be "grilled" before implementing.
+description: Interview the user relentlessly about every aspect of a plan or design until reaching shared understanding. Use when the user wants to be challenged on a plan, pressure-test a design, resolve open decisions one by one, be "grilled" before implementing, or explore a new feature before building it.
 metadata:
   summary: asks until every decision is made
 ---

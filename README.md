@@ -17,7 +17,7 @@ A small factory of hand-made Claude Code skills. Everything here is produced on 
 
 | Skill | What it does |
 | --- | --- |
-| **`/interview`** | Interviews you relentlessly about a plan or design until you reach shared understanding — walking the design tree, resolving decisions one by one, recommending an answer to each. |
+| **`/interview`** | Interviews you decision by decision until nothing's unresolved, exploring the codebase to answer what it can and recommending an answer to every question it asks. Use this to explore new features. |
 | **`/spec`** | Writes up already-agreed work as a spec on an issue. Synthesises decisions already made; it does not interview. Defers to `/interview` when it hits an open question. |
 | **`/tickets`** | Breaks a spec or conversation into ordered issues, created as sub-issues under the parent. Human-readable body, short agent brief at the bottom. |
 | **`/prototype`** | Throwaway code that answers one design question — usually what something should look like. Never merged; the answer is recorded, the code stays on its branch. |
