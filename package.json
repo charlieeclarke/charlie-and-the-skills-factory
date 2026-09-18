@@ -1,7 +1,7 @@
 {
   "name": "charlie-and-the-skills-factory",
   "version": "1.0.1",
-  "description": "Installs seven Claude Code skills into ~/.claude/skills.",
+  "description": "Installs eight Claude Code skills into ~/.claude/skills.",
   "bin": {
     "charlie-and-the-skills-factory": "bin/install.js",
     "skills-factory": "bin/install.js"

@@ -17,7 +17,7 @@ while [ $# -gt 0 ]; do
     *) shift ;;
   esac
 done
-SKILLS="interview componentise spec tickets prototype spec-review handover"
+SKILLS="interview componentise spec tickets prototype spec-review handover stage"
 
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
   B=$(printf '\033[1m'); D=$(printf '\033[2m'); Z=$(printf '\033[0m')

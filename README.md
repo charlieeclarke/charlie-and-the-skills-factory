@@ -21,6 +21,7 @@ A small factory of hand-made Claude Code skills. Everything here is produced on 
 | **`/spec`** | Writes up already-agreed work as a spec on an issue. Synthesises decisions already made; it does not interview. Defers to `/interview` when it hits an open question. |
 | **`/tickets`** | Breaks a spec or conversation into ordered issues, created as sub-issues under the parent. Human-readable body, short agent brief at the bottom. |
 | **`/prototype`** | Throwaway code that answers one design question — usually what something should look like. Never merged; the answer is recorded, the code stays on its branch. |
+| **`/stage`** | Commits the working tree one component at a time, then opens a PR with a 25-word summary and a design link per component. No AI attribution. |
 | **`/componentise`** | Refactors a site's pages into a library of reusable per-section components, one page at a time, ending with each component in its own folder. |
 | **`/spec-review`** | Reviews a diff on two separate axes — repo conventions, and whether it does what the spec asked — run as parallel sub-agents and never merged into one verdict. |
 | **`/handover`** | Writes up a session so another agent can continue it cold: what's in flight, what's decided, what's blocked, what to do next. |
@@ -135,7 +136,7 @@ npx skills@latest add charlieeclarke/charlie-and-the-skills-factory
 ## Uninstall
 
 ```sh
-rm -rf ~/.claude/skills/{interview,componentise,spec,tickets,prototype,spec-review,handover}
+rm -rf ~/.claude/skills/{interview,componentise,spec,tickets,prototype,spec-review,handover,stage}
 ```
 
 For the plugin: `/plugin uninstall skills-factory@charlie-and-the-skills-factory`
@@ -156,7 +157,7 @@ charlie-and-the-skills-factory/
 │           ├── interview/       componentise/
 │           ├── spec/           tickets/
 │           ├── prototype/      spec-review/
-│           └── handover/
+│           └── handover/       stage/
 ├── preview/
 │   └── index.html                # browser replay of the installer
 ├── NOTICE                        # attribution
