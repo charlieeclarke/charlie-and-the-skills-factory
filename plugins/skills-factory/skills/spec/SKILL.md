@@ -7,7 +7,7 @@ description: Write up already-agreed work as a spec on an issue. Use when a deci
 
 Turn work that has **already been decided** into a spec on an issue.
 
-Synthesise, do not interview. If you reach a decision that has not actually been made, stop and say which one — `/grill-me` exists to resolve it. Do not fill the gap with something plausible.
+Synthesise, do not interview. If you reach a decision that has not actually been made, stop and say which one — `/interview` exists to resolve it. Do not fill the gap with something plausible.
 
 ## Principles
 

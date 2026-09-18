@@ -1,5 +1,5 @@
 ---
-name: grill-me
+name: interview
 description: Interview the user relentlessly about every aspect of a plan or design until reaching shared understanding. Use when the user wants to be challenged on a plan, pressure-test a design, resolve open decisions one by one, or be "grilled" before implementing.
 ---
 

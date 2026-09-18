@@ -1,6 +1,6 @@
 ---
 name: componentise
-description: Refactor a site's pages into a library of reusable per-section components, one page at a time, finishing with each component in its own folder. Use when the user wants to componentise/componentize/sectionise pages, extract page sections into reusable components, or turn large page.tsx blobs into shared components. Assumes Next.js App Router + CSS Modules + TypeScript. Runs a grill-me interview first, then works page-by-page pausing for review.
+description: Refactor a site's pages into a library of reusable per-section components, one page at a time, finishing with each component in its own folder. Use when the user wants to componentise/componentize/sectionise pages, extract page sections into reusable components, or turn large page.tsx blobs into shared components. Assumes Next.js App Router + CSS Modules + TypeScript. Runs a interview interview first, then works page-by-page pausing for review.
 ---
 
 # Componentise pages into reusable section components
@@ -9,7 +9,7 @@ Refactor pages (each a large JSX blob backed by a per-page CSS module) into a li
 
 ## Phase 0 — Grill first (always)
 
-Before writing anything, invoke the **grill-me** skill (`/grill-me`, or `/skills-factory:grill-me` when installed as a plugin) to resolve the project-specific design decisions. Explore the codebase to answer what you can; only ask the user what's genuinely their call. Cover at least:
+Before writing anything, invoke the **interview** skill (`/interview`, or `/skills-factory:interview` when installed as a plugin) to resolve the project-specific design decisions. Explore the codebase to answer what you can; only ask the user what's genuinely their call. Cover at least:
 
 - **Reuse scope** — genuinely shared components vs one-off extraction per page.
 - **Cross-page duplicates** — build the shared component the first time the pattern recurs, then reuse it; vs a dedupe pass at the end.

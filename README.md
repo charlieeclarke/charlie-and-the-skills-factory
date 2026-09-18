@@ -17,8 +17,8 @@ A small factory of hand-made Claude Code skills. Everything here is produced on 
 
 | Skill | What it does |
 | --- | --- |
-| **`/grill-me`** | Interviews you relentlessly about a plan or design until you reach shared understanding — walking the design tree, resolving decisions one by one, recommending an answer to each. |
-| **`/spec`** | Writes up already-agreed work as a spec on an issue. Synthesises decisions already made; it does not interview. Defers to `/grill-me` when it hits an open question. |
+| **`/interview`** | Interviews you relentlessly about a plan or design until you reach shared understanding — walking the design tree, resolving decisions one by one, recommending an answer to each. |
+| **`/spec`** | Writes up already-agreed work as a spec on an issue. Synthesises decisions already made; it does not interview. Defers to `/interview` when it hits an open question. |
 | **`/tickets`** | Breaks a spec or conversation into ordered issues, created as sub-issues under the parent. Human-readable body, short agent brief at the bottom. |
 | **`/prototype`** | Throwaway code that answers one design question — usually what something should look like. Never merged; the answer is recorded, the code stays on its branch. |
 | **`/componentise`** | Refactors a site's pages into a library of reusable per-section components, one page at a time, ending with each component in its own folder. |
@@ -33,9 +33,9 @@ Three ways in. Pick **one** — installing by more than one route leaves you wit
 
 | | Command | Skill names | Needs |
 | --- | --- | --- | --- |
-| **npm / yarn** | `npx charlie-and-the-skills-factory` | `/grill-me` | Node 14+ |
-| **Shell** | `curl -fsSL … \| sh` | `/grill-me` | curl, tar |
-| **Plugin** | `/plugin marketplace add …` | `/skills-factory:grill-me` | Claude Code |
+| **npm / yarn** | `npx charlie-and-the-skills-factory` | `/interview` | Node 14+ |
+| **Shell** | `curl -fsSL … \| sh` | `/interview` | curl, tar |
+| **Plugin** | `/plugin marketplace add …` | `/skills-factory:interview` | Claude Code |
 
 ### npm / yarn
 
@@ -76,7 +76,7 @@ Downloads the repo tarball and copies the skills out of it. No Node required.
 /plugin install skills-factory@charlie-and-the-skills-factory
 ```
 
-Managed and updatable through `/plugin`. Note the skills are namespaced by the plugin here: `/skills-factory:grill-me`, `/skills-factory:componentise`.
+Managed and updatable through `/plugin`. Note the skills are namespaced by the plugin here: `/skills-factory:interview`, `/skills-factory:componentise`.
 
 ### Where the skills go
 
@@ -135,7 +135,7 @@ npx skills@latest add charlieeclarke/charlie-and-the-skills-factory
 ## Uninstall
 
 ```sh
-rm -rf ~/.claude/skills/{grill-me,componentise,spec,tickets,prototype,spec-review,handover}
+rm -rf ~/.claude/skills/{interview,componentise,spec,tickets,prototype,spec-review,handover}
 ```
 
 For the plugin: `/plugin uninstall skills-factory@charlie-and-the-skills-factory`
@@ -153,7 +153,7 @@ charlie-and-the-skills-factory/
 │       ├── .claude-plugin/
 │       │   └── plugin.json
 │       └── skills/
-│           ├── grill-me/       componentise/
+│           ├── interview/       componentise/
 │           ├── spec/           tickets/
 │           ├── prototype/      spec-review/
 │           └── handover/
