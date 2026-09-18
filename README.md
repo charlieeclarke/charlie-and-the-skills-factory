@@ -24,7 +24,7 @@ A small factory of hand-made Claude Code skills. Everything here is produced on 
 | **`/stage`** | Commits the working tree one component at a time, or in sensible chunks. Then opens a formatted PR with a 25-word summary and a design link per component. No AI attribution. |
 | **`/componentise`** | Refactors a site's pages into a library of reusable per-section components, one page at a time, ending with each component in its own folder. |
 | **`/spec-review`** | Reviews a diff on two separate axes — repo conventions, and whether it does what the spec asked — run as parallel sub-agents and never merged into one verdict. |
-| **`/handover`** | Writes up a session so another agent can continue it cold: what's in flight, what's decided, what's blocked, what to do next. |
+| **`/handover`** | Writes up the session so another agent continues with all the context. Use when session context is bloated, or if handing off to another human to work on. |
 
 `/spec`, `/tickets`, `/prototype`, `/spec-review` and `/handover` are original text; the ideas behind them come from Matt Pocock's [Skills for Real Engineers](https://github.com/mattpocock/skills). See [NOTICE](NOTICE).
 

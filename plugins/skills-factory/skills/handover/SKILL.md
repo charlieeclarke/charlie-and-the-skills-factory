@@ -1,6 +1,6 @@
 ---
 name: handover
-description: Write up the current session so another agent can pick it up cold - what is in flight, what was decided, what is blocked, and what to do next. Use when work needs to travel to a new session, a different tool, a colleague, or a forked side task.
+description: Write up the current session so another agent can pick it up cold - what is in flight, what was decided, what is blocked, and what to do next. Use when the session context has grown bloated, when work needs to travel to a new session or a different tool, or when handing off to another person.
 argument-hint: "What will the next session be used for?"
 metadata:
   summary: writes the session up for the next agent
