@@ -19,7 +19,7 @@ A small factory of hand-made Claude Code skills. Everything here is produced on 
 | --- | --- |
 | **`/interview`** | Interviews you decision by decision until nothing's unresolved, exploring the codebase to answer what it can and recommending an answer to every question it asks. Use this to explore new features. |
 | **`/spec`** | Writes up already-agreed work as a spec on an issue. Synthesises decisions already made; it does not interview. Defers to `/interview` when it hits an open question. |
-| **`/tickets`** | Breaks a spec or conversation into ordered issues, created as sub-issues under the parent. Human-readable body, short agent brief at the bottom. |
+| **`/tickets`** | Splits work into ordered GitHub issues, each independently shippable. Tickets in formatted style. Human-readable body up top, short technical agent brief below, created as sub-issues under the parent. |
 | **`/prototype`** | Throwaway code that answers one design question — usually what something should look like. Never merged; the answer is recorded, the code stays on its branch. |
 | **`/stage`** | Commits the working tree one component at a time, or in sensible chunks. Then opens a formatted PR with a 25-word summary and a design link per component. No AI attribution. |
 | **`/componentise`** | Refactors a site's pages into a library of reusable per-section components, one page at a time, ending with each component in its own folder. |
