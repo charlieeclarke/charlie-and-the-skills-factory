@@ -3,7 +3,7 @@ name: stage
 description: Commit the current work in per-component chunks and open a pull request with a short summary and a design link for each component changed. Use whenever the user says "stage this", "commit and PR", "ship this branch", "open a PR for this", or asks to commit finished component work - even if they only mention one half. Commits carry no AI attribution.
 argument-hint: "Optional: PR title or a note on what the branch is for"
 metadata:
-  summary: commits per component and opens a PR
+  summary: commits in sensible chunks and opens a PR
 ---
 
 # Stage
@@ -16,7 +16,7 @@ Check `git status` and the current branch. If on the default branch, create one 
 
 ## 2. Commit in chunks
 
-Read the full diff, including untracked files, and group the changes by **parent component** — the top-level component folder, wherever this repo keeps them. Sub-parts belong to their parent; sibling components get separate commits.
+Read the full diff, including untracked files, and group the changes by **parent component** — the top-level component folder, wherever this repo keeps them. Sub-parts belong to their parent; sibling components get separate commits. Where the work isn't component-shaped, chunk by concern instead: one commit per thing a reviewer would want to see on its own.
 
 Chunking matters because reviewers read history per component. One "update styles" commit touching four components hides which change belongs to which design.
 
