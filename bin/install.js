@@ -175,6 +175,14 @@ function frame(cell, label) {
   say(gauge(cell, label));
 }
 
+function summaryOf(skill) {
+  try {
+    const head = fs.readFileSync(path.join(SRC, skill, 'SKILL.md'), 'utf8').split('\n---')[0];
+    const m = head.match(/^\s+summary:\s*(.+)$/m);
+    return m ? m[1].trim() : '';
+  } catch (err) { return ''; }
+}
+
 function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
   for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
@@ -273,9 +281,11 @@ async function main() {
   say('  ' + e.B + e.GOLD + stars + '   L E V E L   U P !   ' + stars + e.Z);
   say('');
   say('  ' + e.D + 'new abilities unlocked:' + e.Z);
+  const width = Math.max(...installed.map((s) => s.length)) + 2;
   installed.forEach((s) => {
+    const pad = sp(width - s.length);
     say('    ' + e.RED + LA + e.Z + e.CREAM + DOT + e.Z + e.RED + RA + e.Z +
-        '  ' + e.B + e.GREEN + '/' + s + e.Z);
+        '  ' + e.B + e.GREEN + '/' + s + e.Z + pad + e.D + summaryOf(s) + e.Z);
   });
   say('');
   skipped.forEach((s) => say('  ' + e.RED + 'x missing from the package: ' + s + e.Z));

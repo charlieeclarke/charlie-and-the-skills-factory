@@ -2,6 +2,8 @@
 name: stage
 description: Commit the current work in per-component chunks and open a pull request with a short summary and a design link for each component changed. Use whenever the user says "stage this", "commit and PR", "ship this branch", "open a PR for this", or asks to commit finished component work - even if they only mention one half. Commits carry no AI attribution.
 argument-hint: "Optional: PR title or a note on what the branch is for"
+metadata:
+  summary: commits per component and opens a PR
 ---
 
 # Stage

@@ -1,6 +1,8 @@
 ---
 name: spec-review
 description: Review changes since a fixed point along two separate axes - does the code follow this repo's conventions, and does it do what the spec or issue actually asked for. Runs both as parallel sub-agents and reports them side by side. Use when reviewing a branch or PR against a spec, or when the user asks to review work against what was requested.
+metadata:
+  summary: checks a diff against conventions and spec
 ---
 
 # Spec review

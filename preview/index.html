@@ -207,6 +207,17 @@
   }
 
   var SKILLS = ['interview','componentise','spec','tickets','prototype','spec-review','handover','stage'];
+  var SUMMARY = {
+    'interview':    'asks until every decision is made',
+    'componentise': 'pages into reusable section components',
+    'spec':         'writes agreed work up on an issue',
+    'tickets':      'splits a spec into ordered sub-issues',
+    'prototype':    'throwaway code to answer one question',
+    'spec-review':  'checks a diff against conventions and spec',
+    'handover':     'writes the session up for the next agent',
+    'stage':        'commits per component and opens a PR'
+  };
+  var NAMEW = 14;
 
   var tail = [
     {h:''},
@@ -226,7 +237,7 @@
   tail.push({h:''});
   tail.push({h:'  ' + w('d','new abilities unlocked:')});
   SKILLS.forEach(function(s){
-    tail.push({h:'    ' + w('red',LA) + w('cream',DOT) + w('red',RA) + '  ' + w('bo green','/' + s), pause:150});
+    tail.push({h:'    ' + w('red',LA) + w('cream',DOT) + w('red',RA) + '  ' + w('bo green','/' + s) + sp(NAMEW - s.length) + w('d', SUMMARY[s] || ''), pause:150});
   });
   tail.push({h:''});
   tail.push({h:'  ' + w('d','Restart Claude Code to use them.')});

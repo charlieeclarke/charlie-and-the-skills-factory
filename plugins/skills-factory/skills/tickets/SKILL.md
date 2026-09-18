@@ -1,6 +1,8 @@
 ---
 name: tickets
 description: Break a spec, plan, or the current conversation into a set of issues, created as sub-issues under the parent and ordered so they can be worked top to bottom. Use when work is too big for one sitting, or when the user says "break this up", "split this into tickets", or "turn this into issues".
+metadata:
+  summary: splits a spec into ordered sub-issues
 ---
 
 # Tickets

@@ -1,6 +1,8 @@
 ---
 name: spec
 description: Write up already-agreed work as a spec on an issue. Use when a decision has been reached and needs recording before anyone builds it, or when the user says "spec this", "write this up", or "put this on the issue". Synthesises decisions already made - it does not interview.
+metadata:
+  summary: writes agreed work up on an issue
 ---
 
 # Spec

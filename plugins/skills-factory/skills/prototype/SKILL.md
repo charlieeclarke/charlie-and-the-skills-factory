@@ -1,6 +1,8 @@
 ---
 name: prototype
 description: Build throwaway code to answer one design question - usually what something should look like, sometimes whether a state model holds up. Use when the user wants to try a few directions before committing, sanity-check an approach, or asks to prototype or try a few directions.
+metadata:
+  summary: throwaway code to answer one question
 ---
 
 # Prototype

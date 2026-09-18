@@ -1,6 +1,8 @@
 ---
 name: componentise
 description: Refactor a site's pages into a library of reusable per-section components, one page at a time, finishing with each component in its own folder. Use when the user wants to componentise/componentize/sectionise pages, extract page sections into reusable components, or turn large page.tsx blobs into shared components. Assumes Next.js App Router + CSS Modules + TypeScript. Runs a interview interview first, then works page-by-page pausing for review.
+metadata:
+  summary: pages into reusable section components
 ---
 
 # Componentise pages into reusable section components

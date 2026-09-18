@@ -300,8 +300,10 @@ say ""
 say "  ${B}${GOLD}★  ★  ★   L E V E L   U P !   ★  ★  ★${Z}"
 say ""
 say "  ${D}new abilities unlocked:${Z}"
+_w=0; for s in $INSTALLED; do [ ${#s} -gt $_w ] && _w=${#s}; done; _w=$((_w + 2))
 for s in $INSTALLED; do
-  say "    ${RED}◄${Z}${CREAM}●${Z}${RED}►${Z}  ${B}${GREEN}/$s${Z}"
+  _sum=$(awk 'NR>1 && /^---$/{exit} /^ *summary:/{sub(/^ *summary: */,""); print; exit}' "$SRC/$s/SKILL.md" 2>/dev/null)
+  say "    ${RED}◄${Z}${CREAM}●${Z}${RED}►${Z}  ${B}${GREEN}/$s${Z}$(bar ' ' $((_w - ${#s})))${D}${_sum}${Z}"
 done
 say ""
 for s in $SKIPPED; do say "  ${RED}x missing from the crate: $s${Z}"; done
